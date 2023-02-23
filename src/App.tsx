@@ -1,24 +1,21 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import { AuthType, init } from '@thoughtspot/visual-embed-sdk';
+import SearchApp from './reports/search_app';
 
 function App() {
+  const thoughtspot_URL = "https://se-thoughtspot-cloud.thoughtspot.cloud/" 
+
+  init({
+    thoughtSpotHost: thoughtspot_URL,
+    authType: AuthType.None,
+    callPrefetch: true,
+  });
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <SearchApp></SearchApp>
     </div>
   );
 }
