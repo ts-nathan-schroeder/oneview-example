@@ -15,7 +15,7 @@ function App() {
 
   return (
     <div className="App">
-      <SearchApp></SearchApp>
+      <SearchApp tsURL={thoughtspot_URL}></SearchApp>
     </div>
   );
 }

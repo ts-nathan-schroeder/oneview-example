@@ -27,6 +27,7 @@ export default function ReportSelectMenu(props: { selectAnswer: any }){
 
     return (
         <Select 
+            style={{width:'200px'}}
             label="Select Answer"
             onChange={(e)=>selectAnswer(e.target.value)}
         >

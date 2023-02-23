@@ -15,8 +15,10 @@ const columns = [
     'Age Group',
     'Gender'
 ]
-
-export default function SearchApp(){
+export default function SearchApp(props: { tsURL: string; }){
+    const {
+        tsURL
+    } = props
 
     const embedRef = useEmbedRef();
 
@@ -27,23 +29,37 @@ export default function SearchApp(){
     const [selectedColumns, setSelectedColumns] = useState([])
 
     function selectAnswer(answerUUID: string){
+        setSelectedColumns([])
         setSelectedAnswer(answerUUID)
     }
-
     function onEmbedRendered(){
         embedRef.current.on(EmbedEvent.Save, (data) => {
-            console.log("saved!!",data)
             setRenderKey( Math.random())
         })
     }
     function toggleSelectedColumns(e:any){
+        setSelectedAnswer(undefined)
         let selectedVal :any = e.target.value;
         setSelectedColumns(selectedVal)
     }
     function saveSearch(){
         embedRef.current.trigger(HostEvent.Save)
     }
-
+    function exportPDF(){
+        fetch(tsURL+"api/rest/2.0/report/answer",
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({metadata_identifier: selectedAnswer}),
+            credentials: 'include',
+        })
+        .then(response => response.json())
+        .then((data)=>{
+            console.log("here!",data)
+        })
+    }
     let searchString = ""
     for (var col of selectedColumns){
         searchString+="["+col+"] "
@@ -63,12 +79,16 @@ export default function SearchApp(){
                 <Button onClick={saveSearch}>
                     Save Search
                 </Button>
+                <Button onClick={exportPDF}>
+                    Export
+                </Button>
             </Stack>
             <Typography align="left" variant="subtitle1" component="h6">
-                Select
+                Select Columns
             </Typography>
             <Stack direction="row" spacing={2}>
                 <Select 
+                    style={{width:'200px'}}
                     multiple={true}
                     value={selectedColumns}
                     label={"Select Column"}
@@ -78,6 +98,7 @@ export default function SearchApp(){
                         return <MenuItem value={column}>{column}</MenuItem>
                     })}
                 </Select>
+
             </Stack>
             <Box height="60vh">
             <SearchEmbed 
@@ -85,6 +106,7 @@ export default function SearchApp(){
                 answerId={selectedAnswer}
                 //visibleActions={}
                 //disabledActions={} 
+                onLoad={onEmbedRendered}
                 dataSources={["782b50d1-fe89-4fee-812f-b5f9eb0a552d"]} 
                 searchOptions = {{
                     searchTokenString: searchString,
