@@ -1,4 +1,4 @@
-import { MenuItem, Select } from "@mui/material"
+import { FormControl, InputLabel, MenuItem, Select } from "@mui/material"
 import { useEffect,useState } from "react"
 
 export default function ReportSelectMenu(props: { selectAnswer: any }){
@@ -26,15 +26,18 @@ export default function ReportSelectMenu(props: { selectAnswer: any }){
 
 
     return (
-        <Select 
-            style={{width:'200px'}}
-            label="Select Answer"
-            onChange={(e)=>selectAnswer(e.target.value)}
-        >
-            {answers.map((answer)=>{
-                return <MenuItem value={answer.id}>{answer.name}</MenuItem>
-            })}
-        </Select>
+        <FormControl>
+            <InputLabel id="demo-simple-select-label">Answer</InputLabel>
+            <Select 
+                style={{width:'200px'}}
+                label="Select Answer"
+                onChange={(e)=>selectAnswer(e.target.value)}
+            >
+                {answers.map((answer)=>{
+                    return <MenuItem value={answer.id}>{answer.name}</MenuItem>
+                })}
+            </Select>
+        </FormControl>
     )
 }
 

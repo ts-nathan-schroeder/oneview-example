@@ -1,6 +1,6 @@
 
 
-import { Box, Button, MenuItem, Select, Typography } from '@mui/material';
+import { Box, Button, FormControl, InputLabel, MenuItem, Select, Typography } from '@mui/material';
 import { Container, Stack } from '@mui/system';
 import { Action, EmbedEvent, HostEvent } from '@thoughtspot/visual-embed-sdk';
 import { useEmbedRef, SearchEmbed } from'@thoughtspot/visual-embed-sdk/react';
@@ -55,9 +55,11 @@ export default function SearchApp(props: { tsURL: string; }){
             body: JSON.stringify({metadata_identifier: selectedAnswer}),
             credentials: 'include',
         })
-        .then(response => response.json())
+        .then(response => response.text())
         .then((data)=>{
-            console.log("here!",data)
+            let csvContent = "data:text/csv;charset=utf-8," + data
+            var encodedUri = encodeURI(csvContent);
+            window.open(encodedUri);
         })
     }
     let searchString = ""
@@ -83,21 +85,22 @@ export default function SearchApp(props: { tsURL: string; }){
                     Export
                 </Button>
             </Stack>
-            <Typography align="left" variant="subtitle1" component="h6">
-                Select Columns
-            </Typography>
+
             <Stack direction="row" spacing={2}>
-                <Select 
-                    style={{width:'200px'}}
-                    multiple={true}
-                    value={selectedColumns}
-                    label={"Select Column"}
-                    onChange={toggleSelectedColumns}
-                >
-                    {columns.map((column)=>{
-                        return <MenuItem value={column}>{column}</MenuItem>
-                    })}
-                </Select>
+                    <FormControl>
+                    <InputLabel id="demo-simple-select-label">Columns</InputLabel>
+                    <Select 
+                        style={{width:'200px'}}
+                        multiple={true}
+                        value={selectedColumns}
+                        label={"Select Column"}
+                        onChange={toggleSelectedColumns}
+                    >
+                        {columns.map((column)=>{
+                            return <MenuItem value={column}>{column}</MenuItem>
+                        })}
+                    </Select>
+                </FormControl>
 
             </Stack>
             <Box height="60vh">
