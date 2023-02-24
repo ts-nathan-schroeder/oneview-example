@@ -29,10 +29,10 @@ export default function SearchApp(props: { tsURL: string; }){
     const [selectedColumns, setSelectedColumns] = useState<string []>([])
 
     function selectAnswer(answerUUID: string){
-        getAnswerColumns(answerUUID)
-        // setSelectedColumns([])
+        //getAnswerColumns(answerUUID)
+        setSelectedColumns([])
         
-        // setSelectedAnswer(answerUUID)
+        setSelectedAnswer(answerUUID)
     }
     function onEmbedRendered(){
         embedRef.current.on(EmbedEvent.Save, (data) => {
@@ -47,44 +47,47 @@ export default function SearchApp(props: { tsURL: string; }){
     function saveSearch(){
         embedRef.current.trigger(HostEvent.Save)
     }
-    function getAnswerColumns(answerUUID: string){
-        let formData = 'export_ids=%5B'+answerUUID+'%5D&formattype=JSON&export_associated=false'
-        let url = tsURL+'callosum/v1/tspublic/v1/metadata/tml/export'
-        fetch(url,
-        {
-          headers: {
-            'Accept': 'text/plain',
-            'Content-Type': 'application/x-www-form-urlencoded'
-          },
-          method:'POST',
-          credentials: 'include',
-          body: formData
-        })
-        .then(response => response.text()).then(
-          data => {
-              var fileinfo = JSON.parse(data)
-              var tml = JSON.parse(fileinfo.object[0].edoc)
-              //var answerColumns = tml.answer.table.ordered_column_ids
-              console.log("answer",tml.answer)
+    function shareSearch(){
+        embedRef.current.trigger(HostEvent.Share)
+    }
+    // function getAnswerColumns(answerUUID: string){
+    //     let formData = 'export_ids=%5B'+answerUUID+'%5D&formattype=JSON&export_associated=false'
+    //     let url = tsURL+'callosum/v1/tspublic/v1/metadata/tml/export'
+    //     fetch(url,
+    //     {
+    //       headers: {
+    //         'Accept': 'text/plain',
+    //         'Content-Type': 'application/x-www-form-urlencoded'
+    //       },
+    //       method:'POST',
+    //       credentials: 'include',
+    //       body: formData
+    //     })
+    //     .then(response => response.text()).then(
+    //       data => {
+    //           var fileinfo = JSON.parse(data)
+    //           var tml = JSON.parse(fileinfo.object[0].edoc)
+    //           //var answerColumns = tml.answer.table.ordered_column_ids
+    //           console.log("answer",tml.answer)
 
-              var queryParts = tml.answer.search_query.split(/\s+(?![^\[]*\]|[^(]*\)|[^\{]*})/)
-              var selectedColumnsCopy: any[] = []
+    //           var queryParts = tml.answer.search_query.split(/\s+(?![^\[]*\]|[^(]*\)|[^\{]*})/)
+    //           var selectedColumnsCopy: any[] = []
 
-              for (var part of queryParts){
-                  if (part.split(".").length > 1){
-                    //handle filters
-                  }else{
-                      var column = part.replace("[","").replace("]","")
-                      if (column!="by"){
-                          selectedColumnsCopy.push(column)
-                      }
-                  }
-              }
-              if (selectedColumnsCopy.length>0 && JSON.stringify(selectedColumns)!=JSON.stringify(selectedColumnsCopy)){
-                  setSelectedColumns(selectedColumnsCopy)
-              }
-        })
-      }
+    //           for (var part of queryParts){
+    //               if (part.split(".").length > 1){
+    //                 //handle filters
+    //               }else{
+    //                   var column = part.replace("[","").replace("]","")
+    //                   if (column!="by"){
+    //                       selectedColumnsCopy.push(column)
+    //                   }
+    //               }
+    //           }
+    //           if (selectedColumnsCopy.length>0 && JSON.stringify(selectedColumns)!=JSON.stringify(selectedColumnsCopy)){
+    //               setSelectedColumns(selectedColumnsCopy)
+    //           }
+    //     })
+    //   }
     function exportPDF(){
         fetch(tsURL+"api/rest/2.0/report/answer",
         {
@@ -119,6 +122,9 @@ export default function SearchApp(props: { tsURL: string; }){
                 </Button>
                 <Button onClick={saveSearch}>
                     Save Search
+                </Button>
+                <Button onClick={shareSearch}>
+                    Share Search
                 </Button>
                 <Button onClick={exportPDF}>
                     Export
